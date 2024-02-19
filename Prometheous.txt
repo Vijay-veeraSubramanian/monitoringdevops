@@ -1,0 +1,19 @@
+Prerequisites
+Kubernetes 1.19+
+Helm 3.7+
+
+
+Get Repository Info
+
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+
+Install Chart
+
+Starting with version 16.0, the Prometheus chart requires Helm 3.7+ in order to install successfully. Please check your helm release before installation.
+
+helm install [RELEASE_NAME] prometheus-community/prometheus
+
+kubectl expose service prometheus-server --type=NodePort --target-port=9090 --name=prometheus-server-ext
+
+minikube service prometheus-server-ext

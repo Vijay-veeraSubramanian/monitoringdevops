@@ -1,0 +1,53 @@
+Prerequisites:
+Before we start with the installation process, make sure you have the following prerequisites:
+A server running Ubuntu 20.04 with at least 2 CPU cores and 4GB of RAM.
+A non-root user with sudo privileges.
+Docker installed on the server.
+
+sudo swapoff -a
+
+
+Step 1: Update the system
+The first step is to update the Ubuntu system to the latest version. Run the following command to update the system:
+
+sudo apt update
+sudo apt upgrade
+Step 2: Install kubeadm, kubelet, and kubectl
+
+Next, we will install kubeadm, kubelet, and kubectl. These are the essential components of Kubernetes. Run the following command to install them:
+
+sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
+deb https://apt.kubernetes.io/ kubernetes-xenial main
+EOF
+sudo apt-get update
+sudo apt-get install -y kubelet kubeadm kubectl
+sudo apt-mark hold kubelet kubeadm kubectl
+
+Step 3: Initialize Kubernetes
+After installing the Kubernetes components, we need to initialize the cluster using kubeadm. Run the following command to initialize the cluster:
+
+sudo kubeadm init --pod-network-cidr=192.168.0.0/16
+Note down the kubeadm join command that appears at the end of the output. You will need it to join worker nodes to the cluster.
+
+Step 4: Configure kubectl
+After initializing the cluster, we need to configure kubectl to communicate with the Kubernetes API server. Run the following commands to do so:
+
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+Step 5: Install a Pod network add-on
+To communicate between containers running on different nodes in the cluster, we need to install a Pod network add-on. Run the following command to install Calico:
+
+kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+Step 6: Join worker nodes (Optional)
+If you want to add worker nodes to the Kubernetes cluster, you can do so by running the kubeadm join command that you noted down in Step 3 on each worker node.
+
+Step 7: Verify the installation
+To verify that Kubernetes is running correctly, run the following command:
+
+kubectl get nodes
+You should see the master node and any worker nodes that you added.
+
+Congratulations! You have successfully installed Kubernetes on Ubuntu 20.04. Kubernetes is a powerful tool that can help you manage your containerized applications efficiently. If you face any issues during the installation process, refer to the official Kubernetes documentation for more information
